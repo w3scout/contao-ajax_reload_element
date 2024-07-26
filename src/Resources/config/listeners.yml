@@ -3,6 +3,7 @@ services:
     public: true
     arguments:
       - '@contao.image.picture_factory'
+      - '@contao.insert_tag.parser'
   
   Richardhj\ContaoAjaxReloadElementBundle\EventListener\DataContanier\ModifyPalettesListener:
     public: true
