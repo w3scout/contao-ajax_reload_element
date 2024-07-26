@@ -27,6 +27,8 @@ use ContaoCommunityAlliance\UrlBuilder\UrlBuilder;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+use Contao\StringUtil;
+
 
 /**
  * Class AjaxReloadElement
@@ -101,7 +103,7 @@ class AjaxReloadElementListener
         $element       = null;
         $elementParser = [];
         $data          = [];
-        list ($elementType, $elementId) = trimsplit('::', $paramElement);
+        list ($elementType, $elementId) = StringUtil::trimsplit('::', $paramElement);
 
         // Remove the get parameter from the url
         $requestUrl = UrlBuilder::fromUrl('/'.Environment::get('request'));
@@ -140,7 +142,9 @@ class AjaxReloadElementListener
 
         // Set theme and layout related information in the page object (see #10)
         $theme = $layout->getRelated('pid');
-        $this->pictureFactory->setDefaultDensities($theme->defaultImageDensities);
+        #dump($theme->defaultImageDensities);exit;
+        // @ToDo: $this->pictureFactory->setDefaultDensities($theme->defaultImageDensities);
+        $this->pictureFactory->setDefaultDensities('' );
         $page->layoutId = $layout->id;
         $page->template = $layout->template ?: 'fe_page';
         $page->templateGroup = $theme->templates;
@@ -152,8 +156,8 @@ class AjaxReloadElementListener
         $return = $elementParser($element);
 
         // Replace insert tags and then re-replace the request_token tag in case a form element has been loaded via insert tag
-        $return = ContaoController::replaceInsertTags($return, false);
-        $return = str_replace(['{{request_token}}', '[{]', '[}]'], [REQUEST_TOKEN, '{{', '}}'], $return);
+        // @ToDo: #$return = ContaoController::replaceInsertTags($return, false);
+        // @ToDo: $return = str_replace(['{{request_token}}', '[{]', '[}]'], [REQUEST_TOKEN, '{{', '}}'], $return);
         $return = ContaoController::replaceDynamicScriptTags($return); // see contao/core#4203
 
         $data['status'] = 'ok';
