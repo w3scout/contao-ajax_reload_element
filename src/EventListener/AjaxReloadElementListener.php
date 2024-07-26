@@ -28,6 +28,8 @@ use ReflectionClass;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Contao\StringUtil;
+use Contao\CoreBundle\InsertTag\InsertTagParser;
+
 
 
 /**
@@ -49,11 +51,13 @@ class AjaxReloadElementListener
      * @var PictureFactoryInterface
      */
     private $pictureFactory;
+    private $insertTagParser;
 
 
-    public function __construct(PictureFactoryInterface $pictureFactory)
+    public function __construct(PictureFactoryInterface $pictureFactory, InsertTagParser $insertTagParser)
     {
-        $this->pictureFactory = $pictureFactory; 
+        $this->pictureFactory = $pictureFactory;
+        $this->insertTagParser = $insertTagParser;
     }
 
 
@@ -156,7 +160,8 @@ class AjaxReloadElementListener
         $return = $elementParser($element);
 
         // Replace insert tags and then re-replace the request_token tag in case a form element has been loaded via insert tag
-        // @ToDo: #$return = ContaoController::replaceInsertTags($return, false);
+        $return = $this->insertTagParser->replaceInline($return ?? '');
+
         // @ToDo: $return = str_replace(['{{request_token}}', '[{]', '[}]'], [REQUEST_TOKEN, '{{', '}}'], $return);
         $return = ContaoController::replaceDynamicScriptTags($return); // see contao/core#4203
 
